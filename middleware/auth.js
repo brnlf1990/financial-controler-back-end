@@ -1,3 +1,5 @@
+require('dotenv').config()
+const { JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
@@ -12,7 +14,7 @@ module.exports = (req, res, next) => {
 
     let payload;
     try {
-        payload = jwt.verify(token, 'chave-secreta');        
+        payload = jwt.verify(token, JWT_SECRET);        
     }
     catch{
         const error = new Error('Incorrect email or passwordEmail')

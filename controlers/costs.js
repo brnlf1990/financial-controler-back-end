@@ -62,11 +62,10 @@ module.exports.editCostValue = (req, res, next) => {
 
   Costs.findByIdAndUpdate(
     valueId,
-    { description, category, value  },
+    { description, category, value },
     { new: true, runValidators: true }
   )
     .then((items) => {
-        
       if (!items) {
         const error = new Error(
           "Não foi possivel modificar o valor, preencha os campos corretamente."
@@ -74,7 +73,7 @@ module.exports.editCostValue = (req, res, next) => {
         error.status = 400;
         next(error);
       }
-      res.status(200).send({  items });
+      res.status(200).send({ items });
     })
     .catch(next);
 };

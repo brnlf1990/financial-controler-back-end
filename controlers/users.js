@@ -1,3 +1,5 @@
+require("dotenv").config();
+const { JWT_SECRET } = process.env;
 const hash = require("../utils/hash");
 const jwt = require("jsonwebtoken");
 const User = require("../models/users");
@@ -20,7 +22,7 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   const { authorization } = req.headers;
   const token = authorization.replace("Bearer ", "");
-  const payload = jwt.verify(token, "chave-secreta");
+  const payload = jwt.verify(token, JWT_SECRET);
   req.user = payload;
 
   User.findById(payload._id)
@@ -40,11 +42,11 @@ module.exports.addUsers = (req, res, next) => {
   console.log(req.body);
 
   const { email, password, name, about, avatar } = req.body;
-  console.log(password);
 
   const hashedPassword = hash.createHash(password);
 
   User.create({ email, password: hashedPassword, name, about, avatar })
+    .select("-password")
     .then((user) => {
       if (!user) {
         const error = new Error("Validation error");
@@ -84,7 +86,9 @@ module.exports.login = (req, res, next) => {
 
   User.findUserByCredentials({ email, password })
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, "chave-secreta");
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "3d",
+      });
       res.send({ data: token });
     })
     .catch((err) => {
