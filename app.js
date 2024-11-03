@@ -17,7 +17,15 @@ app.use(auth);
 app.use("/costs", costsRouter);
 
 
+app.use((err, req, res, next) => {
+  if (!err.status){
+    res.status(500).send({message:err.message})
+    return
+  }
 
+
+ res.status(err.status).send({message:err.message})
+});
 app.listen(PORT, () => {
   console.log(`O App está escutando na porta ${PORT}`);
 });
