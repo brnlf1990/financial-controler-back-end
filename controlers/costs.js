@@ -33,14 +33,14 @@ module.exports.getTotalCostValues = (req, res, next) => {
 };
 
 module.exports.addCostValue = (req, res, next) => {
-  const { description, value, category } = req.body;
+  const {date, description, value, category } = req.body;
   const userId = req.user._id;
   if (!category) {
     return res.status(400).send({
       message: "Valor e categoria são obrigatórios.",
     });
   }
-  Costs.create({ description, value, category, owner: userId })
+  Costs.create({ date, description, value, category, owner: userId })
     .then((value) => {
       if (!value) {
         const error = new Error(
@@ -58,7 +58,6 @@ module.exports.addCostValue = (req, res, next) => {
 module.exports.editCostValue = (req, res, next) => {
   const { description, category, value } = req.body;
   const valueId = req.params._id;
-  console.log(valueId);
 
   Costs.findByIdAndUpdate(
     valueId,

@@ -4,14 +4,14 @@ const { validateHash } = require("../utils/hash");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    minlength: 2,
-    maxlength: 30,
-    required: "This field is required.",
+    minlength: [2, 'Esse campo deve ter pelo menos 2 caracteres.'],
+    maxlength: [30, 'Esse campo deve ter no máximo 30 caracteres.'],
+    required: "Este campo é necessário",
   },
   about: {
     type: String,
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, 'Esse campo deve ter pelo menos 2 caracteres.'],
+    maxlength: [30, 'Esse campo deve ter no máximo 30 caracteres.'],
   },
   avatar: {
     type: String,
@@ -20,21 +20,27 @@ const userSchema = new mongoose.Schema({
         return /^(https?:\/\/[^\s$.?#].[^\s]*)$/.test(link);
       },
     },
-    message: (props) => `${props.value}`,
+    message: (props) => `${props.value}não é um link válido. Por favor, insira uma URL válida.`,
   },
   email: {
     type: String,
     lowercase: true,
     trim: true,
-    required: "Email is required",
+    required: "Este campo é necessário",
     unique: true,
   },
   password: {
     type: String,
-    required: true,
+    required: "Este campo é necessário",
     trim: true,
-    minlength: 8,
   },
+});
+userSchema.pre('validate', function (next) {
+  
+  if (this.isModified('password') && this.password.length < 8) {
+    return next(new Error('A senha deve ter pelo menos 8 caracteres.'));
+  }
+  next();
 });
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials({
