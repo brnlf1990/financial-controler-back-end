@@ -7,6 +7,7 @@ const User = require("../models/users");
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((user) => {
+
       if (!user) {
         const error = new Error("User not found.");
         error.status = 404;
@@ -28,6 +29,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(payload._id)
     .select("-password")
     .then((currentUser) => {
+
       if (!currentUser) {
         const error = new Error("User not found");
         error.status = 404;
@@ -39,25 +41,45 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 module.exports.addUsers = (req, res, next) => {
-  console.log(req.body);
-
   const { email, password, name, about, avatar } = req.body;
 
   const hashedPassword = hash.createHash(password);
+  User.findOne({ email }).then((user) => {
+    if (user) {
 
-  User.create({ email, password: hashedPassword, name, about, avatar })
-    .select("-password")
-    .then((user) => {
-      if (!user) {
-        const error = new Error("Validation error");
-        error.status = 400;
-        next(error);
-      }
-      console.log("Enrou no addUsers");
+      return res
+        .status(400)
+        .send({ message: "Este e-mail já está registrado." });
+    }
+    return User.create({ email, password: hashedPassword, name, about, avatar })
+      .then((user) => {
+        if (!user) {
 
-      res.status(200).send({ data: user });
-    })
-    .catch(next);
+          const error = new Error("Validation error");
+          error.status = 400;
+          return next(error);
+        }
+
+        const userResponse = user.toObject ? user.toObject() : { ...user };
+        delete userResponse.password;
+        res.status(200).send({ data: userResponse });
+      })
+      .catch((err) => {
+        if (err.name === "ValidationError") {
+          const errorMessages = {};
+          for (let field in err.errors) {
+            if (err.errors.hasOwnProperty(field)) {
+              errorMessages[field] = err.errors[field].message;
+            }
+          }
+          
+
+          res.status(400).json({ errors: errorMessages });
+        } else {
+          return next(err);
+        }
+      });
+  });
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -89,7 +111,16 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "3d",
       });
-      res.send({ data: token });
+      res.send({
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          about: user.about,
+          avatar:user.avatar
+        },
+        token,
+      });
     })
     .catch((err) => {
       res.status(401).send({ message: err });

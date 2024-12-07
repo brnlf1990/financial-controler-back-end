@@ -11,7 +11,6 @@ const {
 usersRouter.get("/", getUsers);
 usersRouter.get("/me", getCurrentUser);
 // usersRouter.get("/:_id", getUsersById);
-usersRouter.post("/signup", addUsers);
 
 
 usersRouter.patch("/:_id", updateUser);
