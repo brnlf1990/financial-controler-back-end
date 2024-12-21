@@ -11,7 +11,8 @@ const { requestLogger, errorLogger } = require('./middleware/logger');
 const app = express();
 const allowedCors = [
    'http://localhost:3000',
-   'http://192.168.0.3:3000'
+   'http://192.168.0.3:3000',
+   "http://34.42.224.240:3001"
 ]
 mongoose.connect("mongodb://localhost:27017/financialdb");
 app.use(express.json());
