@@ -17,6 +17,7 @@ const allowedCors = [
   "https://www.easy-bucket.online",
   "http://easy-bucket.online",
   "https://easy-bucket.online",
+  "https://api.easy-bucket.online"
 ];
 mongoose.connect("mongodb://localhost:27017/financialdb");
 app.use(express.json());
