@@ -10,14 +10,15 @@ const mongoose = require("mongoose");
 const { requestLogger, errorLogger } = require("./middleware/logger");
 const app = express();
 const allowedCors = [
-  "http://localhost:3000",
+"http://localhost:3000",
   "http://192.168.0.3:3000",
   "http://34.42.224.240:3001",
   "http://www.easy-bucket.online",
   "https://www.easy-bucket.online",
   "http://easy-bucket.online",
   "https://easy-bucket.online",
-  "https://api.easy-bucket.online"
+  "http://api.easy-bucket.online",
+  "https://api.easy-bucket.online",
 ];
 mongoose.connect("mongodb://localhost:27017/financialdb");
 app.use(express.json());
@@ -45,7 +46,7 @@ app.use("/revenue", revenueRouter);
 app.use("/costs", costsRouter);
 
 app.use(errorLogger);
-app.use((err, req, res, next) => {
+app.use((err,  res) => {
   if (!err.status) {
     res.status(500).send({ message: err.message });
     return;
