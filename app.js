@@ -1,11 +1,18 @@
 const express = require("express");
 const usersRouter = require("./routes/users");
 const costsRouter = require("./routes/costs");
+
 const revenueRouter = require("./routes/revenue");
 const auth = require("./middleware/auth");
 const { PORT = 3001 } = process.env;
 const { login, addUsers } = require("./controlers/users");
 const cors = require("cors");
+
+const auth = require("./middleware/auth")
+const { PORT = 3001 } = process.env;
+const { login } = require("./controlers/users");
+
+
 const mongoose = require("mongoose");
 const { requestLogger, errorLogger } = require("./middleware/logger");
 const app = express();
