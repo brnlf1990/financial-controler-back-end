@@ -17,9 +17,7 @@ module.exports = (req, res, next) => {
         payload = jwt.verify(token, JWT_SECRET);        
     }
     catch{
-        const error = new Error('Incorrect email or passwordEmail')
-        error.status = 401;
-        next(error)
+        return res.status(401).send({ message: 'Token inválido ou expirado' });
     }
 req.user = payload;
 next();

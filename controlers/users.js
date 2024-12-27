@@ -68,7 +68,7 @@ module.exports.addUsers = (req, res, next) => {
         if (err.name === "ValidationError") {
           const errorMessages = {};
           for (let field in err.errors) {
-            if (err.errors.hasOwnProperty(field)) {
+            if (Object.prototype.hasOwnProperty.call(err.errors, field)) {
               errorMessages[field] = err.errors[field].message;
             }
           }
@@ -103,7 +103,7 @@ module.exports.updateUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   User.findUserByCredentials({ email, password })
